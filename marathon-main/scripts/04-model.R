@@ -11,49 +11,32 @@
 #### Workspace setup ####
 library(tidyverse)
 library(rstanarm)
+library(arrow)
 
 #### Read data ####
-analysis_data <- read_csv("data/analysis_data/analysis_data.csv")
+analysis_data <- read_parquet("marathon-main/data/analysis_data/analysis_data.parquet")
+
+set.seed(555)
+
+analysis_data <- 
+  ces2020 |> 
+  slice_sample(n = 1000)
+
 
 ### Model data ####
 first_model <-
   stan_glm(
-    formula = flying_time ~ length + width,
+    formula = voted_for ~ gender + education,
     data = analysis_data,
-    family = gaussian(),
+    family = binomial(link = "logit"),
     prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
     prior_intercept = normal(location = 0, scale = 2.5, autoscale = TRUE),
-    prior_aux = exponential(rate = 1, autoscale = TRUE),
-    seed = 853
+    seed = 555
   )
 
 
 #### Save model ####
 saveRDS(
   first_model,
-  file = "models/first_model.rds"
+  file = "marathon-main/models/first_model.rds"
 )
-
-
-
-second_model <-
-  stan_glm(
-    formula = flying_time ~ length,
-    data = analysis_data,
-    family = gaussian(),
-    prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
-    prior_intercept = normal(location = 0, scale = 2.5, autoscale = TRUE),
-    prior_aux = exponential(rate = 1, autoscale = TRUE),
-    seed = 853
-  )
-
-prior_summary(second_model)
-
-
-#### Save model ####
-saveRDS(
-  second_model,
-  file = "models/second_model.rds"
-)
-
-
