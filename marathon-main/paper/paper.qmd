@@ -2,7 +2,7 @@
 title: "My title"
 subtitle: "My subtitle if needed"
 author: 
-  - First author
+  - Krishiv
   - Another author
 thanks: "Code and data are available at: LINK."
 date: today
@@ -18,8 +18,19 @@ bibliography: references.bib
 #| warning: false
 #| message: false
 
+library(boot)
+library(broom.mixed)
+library(collapse)
+library(gutenbergr)
+library(janitor)
+library(knitr)
+library(marginaleffects)
+library(modelsummary)
+library(rstanarm)
+library(tidybayes)
 library(tidyverse)
 library(palmerpenguins)
+library(arrow)
 ```
 
 
@@ -60,7 +71,9 @@ And also planes (@fig-planes). (You can change the height and width, but don't w
 #| warning: false
 #| message: false
 
-analysis_data <- read_csv(here::here("data/analysis_data/analysis_data.csv"))
+analysis_data <- read_parquet(here::here("data/analysis_data/analysis_data.parquet"))
+
+first_model <- 
 
 analysis_data |> 
   ggplot(aes(x = width, y = length)) +
@@ -117,10 +130,7 @@ Our results are summarized in @tbl-modelresults.
 library(rstanarm)
 
 first_model <-
-  readRDS(file = here::here("models/first_model.rds"))
-
-second_model <-
-  readRDS(file = here::here("models/second_model.rds"))
+  readRDS(file = here::here("politics2/marathon-main/models/first_model.rds"))
 ```
 
 ```{r}
@@ -141,6 +151,16 @@ modelsummary::modelsummary(
 ```
 
 
+```{r}
+#| echo: false
+#| eval: true
+#| label: fig-modelresultsfig
+#| fig-cap: "Explanatory models of flight time based on wing width and wing length"
+#| warning: false
+
+modelplot(first_model, conf_level = 0.9) +
+  labs(x = "90 per cent credibility interval")
+```
 
 
 # Discussion

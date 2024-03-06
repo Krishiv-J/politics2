@@ -38,5 +38,5 @@ first_model <-
 #### Save model ####
 saveRDS(
   first_model,
-  file = "marathon-main/models/first_model.rds"
+  file = "marathon-main/models/my_model.rds"
 )
